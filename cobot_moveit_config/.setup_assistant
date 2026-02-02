@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: mycobot_description
+    relative_path: urdf/robots/mycobot_280.urdf.xacro
+  srdf:
+    relative_path: config/mycobot_280.srdf
+  package_settings:
+    author_name: Anurag choudhury
+    author_email: idanurag567@gmail.com
+    generated_timestamp: 1769873090

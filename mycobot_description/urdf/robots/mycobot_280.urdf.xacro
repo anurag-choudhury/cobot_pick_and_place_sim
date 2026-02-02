@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mycobot_280">
+    <xacro:arg name="robot_name" default="mycobot_280"/>
+    <xacro:arg name="add_world" default="true"/>
+    <xacro:arg name="base_link" default="base_link"/>
+    <xacro:arg name="base_type" default="g_shape"/>
+    <xacro:arg name="flange_link" default="link6_flange"/>
+    <xacro:arg name="gripper_type" default="pump"/>
+    <xacro:arg name="prefix" default=""/>
+    <xacro:arg name="use_camera" default="true"/>
+    <xacro:arg name="use_gazebo" default="true"/>
+    <xacro:arg name="use_gripper" default="true"/>
+
+    <xacro:if value="$(arg add_world)">
+
+
+      <link name="world"/>
+      <!-- Pedestal link (solid cube/box) -->
+<link name="$(arg prefix)pedestal_link">
+  <inertial>
+    <origin xyz="0 0 0.15" rpy="0 0 0"/>
+    <mass value="10.0"/>
+    <inertia ixx="0.1" ixy="0.0" ixz="0.0"
+             iyy="0.1" iyz="0.0"
+             izz="0.1"/>
+  </inertial>
+
+  <visual>
+    <!-- center of the box at z = height/2 -->
+    <origin xyz="0 0 0.15" rpy="0 0 0"/>
+    <geometry>
+      <box size="0.4 0.2 0.3"/>
+    </geometry>
+    <material name="black">
+      <color rgba="0.2 0.2 0.2 1.0"/>
+    </material>
+  </visual>
+
+  <collision>
+    <origin xyz="0 0 0.15" rpy="0 0 0"/>
+    <geometry>
+      <box size="0.4 0.2 0.3"/>
+    </geometry>
+  </collision>
+</link>
+
+<!-- world -> pedestal -->
+<joint name="$(arg prefix)world_to_pedestal" type="fixed">
+  <parent link="world"/>
+  <child link="$(arg prefix)pedestal_link"/>
+  <origin xyz="0 0 0" rpy="0 0 0"/>
+</joint>
+
+<!-- pedestal -> robot base (mount base at pedestal top) -->
+<joint name="$(arg prefix)pedestal_to_base" type="fixed">
+  <parent link="$(arg prefix)pedestal_link"/>
+  <child link="$(arg prefix)$(arg base_link)"/>
+  <!-- pedestal height = 0.3, so top surface is z=0.3 -->
+  <origin xyz="0 0 0.3" rpy="0 0 0"/>
+</joint>
+
+      <!-- <joint name="$(arg prefix)virtual_joint" type="fixed">
+          <parent link="world"/>
+          <child link="$(arg prefix)$(arg base_link)"/>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+      </joint> -->
+    </xacro:if>
+    
+    <xacro:property name="current_base" value="$(arg base_type)"/>
+    <xacro:if value="${current_base == 'g_shape'}">
+        <xacro:include filename="$(find mycobot_description)/urdf/mech/g_shape_base_v2_0.urdf.xacro"/>
+        <xacro:g_shape_base
+            base_link="$(arg base_link)"
+            prefix="$(arg prefix)"/>
+    </xacro:if>
+
+    <xacro:include filename="$(find mycobot_description)/urdf/mech/mycobot_280_arm.urdf.xacro"/>
+    <xacro:mycobot_280_arm
+      base_link="$(arg base_link)"
+      flange_link="$(arg flange_link)"
+      prefix="$(arg prefix)">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:mycobot_280_arm>
+
+    <xacro:if value="$(arg use_gripper)">
+  <xacro:property name="current_gripper" value="$(arg gripper_type)"/>
+
+  <!-- Pump end-effector (new) -->
+  <xacro:if value="${current_gripper == 'pump'}">
+    <xacro:include filename="$(find mycobot_description)/urdf/mech/pump_end_effector.urdf.xacro"/>
+    <xacro:pump_end_effector
+  parent="$(arg flange_link)"
+  base_parent="$(arg base_link)"
+  prefix="$(arg prefix)">
+  <origin xyz="0 0 0" rpy="0 0 0"/>
+</xacro:pump_end_effector>
+
+  </xacro:if>
+
+</xacro:if>
+
+
+    <xacro:include filename="$(find mycobot_description)/urdf/control/gazebo_sim_ros2_control.urdf.xacro" />
+    <xacro:load_gazebo_sim_ros2_control_plugin
+      robot_name="$(arg robot_name)"
+      use_gazebo="$(arg use_gazebo)"/>
+
+    <xacro:include filename="$(find mycobot_description)/urdf/control/mycobot_280_ros2_control.urdf.xacro" />
+    <xacro:mycobot_ros2_control
+      prefix="$(arg prefix)"
+      flange_link="$(arg flange_link)"
+      use_gazebo="$(arg use_gazebo)"/>
+
+     <xacro:include filename="$(find mycobot_description)/urdf/sensors/intel_rgbd_cam_d435.urdf.xacro"/>
+
+  <xacro:intel_d435
+    parent_link="$(arg prefix)$(arg flange_link)"
+    prefix="$(arg prefix)"
+    use_camera="$(arg use_camera)"
+    use_gazebo="$(arg use_gazebo)"/>
+
+    
+</robot>

@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+
+  <model name="attach_plugin">
+    <static>true</static>
+
+    <plugin
+      filename="gz-sim-detachable-joint-system"
+      name="gz::sim::systems::DetachableJoint">
+
+      <!-- parent must be scoped: model::link -->
+      <parent_link>mycobot_280::link6_flange</parent_link>
+
+      <!-- child model name must match exactly -->
+      <child_model>aruco_cube</child_model>
+
+      <!-- update this once you confirm cube link name -->
+      <child_model_link>link</child_model_link>
+
+      <attach_topic>/cube/attach</attach_topic>
+      <detach_topic>/cube/detach</detach_topic>
+      <output_topic>/cube/attach_state</output_topic>
+
+    </plugin>
+  </model>
+
+</sdf>
+  

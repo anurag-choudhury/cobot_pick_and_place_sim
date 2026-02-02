@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!--
+    parent      = flange link (link6_flange)
+    base_parent = base link   (base_link)
+  -->
+  <xacro:macro name="pump_end_effector" params="parent base_parent prefix *origin">
+
+    <!-- Pump head link -->
+    <link name="${prefix}pump_head">
+      <visual>
+        <geometry>
+          <mesh filename="file://$(find mycobot_description)/urdf/pump_head.dae"/>
+        </geometry>
+        <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="file://$(find mycobot_description)/urdf/pump_head.dae"/>
+        </geometry>
+        <origin xyz="0.0 0.008 0.009" rpy="1.5708 0 0"/>
+      </collision>
+    </link>
+
+    <!-- Pump box link (base mounted) -->
+    <link name="${prefix}pump_box">
+      <visual>
+        <geometry>
+          <mesh filename="file://$(find mycobot_description)/urdf/pump_box.dae"/>
+        </geometry>
+        <origin xyz="0.0 -0.15 0.0" rpy="1.5708 3.14159 0"/>
+      </visual>
+
+      <!-- keep collision simple for Gazebo stability -->
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.05 0.05 0.05"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- flange (parent) -> pump_head -->
+    <joint name="${prefix}flange_to_pump_head" type="fixed">
+      <parent link="${prefix}${parent}"/>
+      <child link="${prefix}pump_head"/>
+      <!-- only tune THIS for pump head alignment -->
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <!-- base (base_parent) -> pump_box -->
+    <joint name="${prefix}base_to_pump_box" type="fixed">
+      <parent link="${prefix}${base_parent}"/>
+      <child link="${prefix}pump_box"/>
+      <!-- tune if needed; keep 0 first -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+    <link name="${prefix}tcp"/>
+<joint name="${prefix}pump_to_tcp" type="fixed">
+  <parent link="${prefix}pump_head"/>
+  <child link="${prefix}tcp"/>
+  <origin xyz="0 0 0.09" rpy="0 0 0"/>
+</joint>
+
+
+  </xacro:macro>
+  <gazebo>
+  <plugin filename="gz-sim-detachable-joint-system"
+          name="gz::sim::systems::DetachableJoint">
+
+    <parent_link>link6_flange</parent_link>
+
+    <child_model>aruco_cube</child_model>
+    <child_link>cube_link</child_link>
+
+    <attach_topic>/cube/attach</attach_topic>
+    <detach_topic>/cube/detach</detach_topic>
+    <output_topic>/cube/attach_state</output_topic>
+  </plugin>
+</gazebo>
+</robot>
