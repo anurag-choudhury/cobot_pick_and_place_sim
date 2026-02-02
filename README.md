@@ -68,6 +68,13 @@ sudo apt install ros-humble-gazebo-ros-pkgs  sudo apt install ros-humble-vision-
 
  How to Run the Task
 ----------------------
+## Use docker 
+
+```text 
+./build.sh #build the docker image from Dockerfile
+./run.sh #once build run the docker container usign the image 
+./terminal.sh #attach another terminal to the same container 
+```
 
 To run the full pipeline, you need to launch **three components** in sequence:
 

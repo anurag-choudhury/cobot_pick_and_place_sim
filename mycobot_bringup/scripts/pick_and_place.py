@@ -57,7 +57,7 @@ class ViewPickPlace(Node):
         self.declare_parameter(
             "view_joint_names",
             ["link1_to_link2", "link2_to_link3", "link3_to_link4",
-             "link4_to_link5", "link5_to_link6", "link6_to_link6"]
+             "link4_to_link5", "link5_to_link6", "link6_to_link6_flange"]
         )
         self.declare_parameter("view_joint_deg", [0.0, 41.0, -26.0, -65.0, 0.0, 0.0])
 

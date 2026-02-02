@@ -30,13 +30,7 @@ def generate_launch_description():
         name="aruco_pick_place_client",
         output="screen",
         parameters=[
-            moveit_config.to_dict(),  # ✅ this is the key: inherits pipelines + robot_description etc.
-            # {
-            #     # Your app params (adjust as you want)
-            #     "moveit_group": "arm",
-            #     "planning_frame": "world",
-            #     "ee_link": "tool0",
-            # }
+            moveit_config.to_dict(),  
         ],
     )
 

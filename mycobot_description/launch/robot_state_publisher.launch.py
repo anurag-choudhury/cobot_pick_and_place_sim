@@ -44,17 +44,15 @@ def process_ros2_controllers_config(context):
     # Define both source and install paths
     src_config_path = os.path.join(
         home,
-        'ros2_ws/src/mycobot_ros2/mycobot_moveit_config/config',
-        robot_name
+        'ros2_ws/src/mycobot_ros2/cobot_moveit_config/config'
     )
     install_config_path = os.path.join(
         home,
-        'ros2_ws/install/mycobot_moveit_config/share/mycobot_moveit_config/config',
-        robot_name
+        'ros2_ws/install/mycobot_moveit_config/share/mycobot_moveit_config/config'
     )
 
     # Read from source template
-    template_path = os.path.join(src_config_path, 'ros2_controllers_template.yaml')
+    template_path = os.path.join(src_config_path, 'ros2_controllers.yaml')
     with open(template_path, 'r', encoding='utf-8') as file:
         template_content = file.read()
 
